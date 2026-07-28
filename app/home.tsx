@@ -22,9 +22,19 @@ export default function Home() {
       </Text>
 
       {profile?.verification_status === 'approved' && (
-        <Pressable onPress={() => router.push('/browse')} className="mt-6 items-center rounded-lg bg-rose-600 px-6 py-3">
-          <Text className="font-semibold text-white">Browse profiles</Text>
-        </Pressable>
+        <>
+          <Pressable onPress={() => router.push('/browse')} className="mt-6 items-center rounded-lg bg-rose-600 px-6 py-3">
+            <Text className="font-semibold text-white">Browse profiles</Text>
+          </Pressable>
+          <View className="mt-3 flex-row gap-3">
+            <Pressable onPress={() => router.push('/interests')} className="items-center rounded-lg border border-rose-600 px-6 py-3">
+              <Text className="font-semibold text-rose-600">Interests</Text>
+            </Pressable>
+            <Pressable onPress={() => router.push('/messages')} className="items-center rounded-lg border border-rose-600 px-6 py-3">
+              <Text className="font-semibold text-rose-600">Messages</Text>
+            </Pressable>
+          </View>
+        </>
       )}
 
       <Pressable onPress={() => router.push('/onboarding')} className="mt-3 rounded-lg border border-rose-600 px-6 py-3">
