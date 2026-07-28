@@ -15,7 +15,7 @@ export function StepReligion({ form, update }: Props) {
       <Text className="mb-6 text-gray-500">Used for search and compatibility filters.</Text>
 
       <FormField label="Religion" value={form.religion} onChangeText={(v) => update({ religion: v })} placeholder="e.g. Hindu" />
-      <FormField label="Caste" optional value={form.caste} onChangeText={(v) => update({ caste: v })} placeholder="Caste" />
+      <FormField label="Caste" value={form.caste} onChangeText={(v) => update({ caste: v })} placeholder="Caste" />
       <FormField
         label="Sub-caste"
         optional
@@ -30,6 +30,13 @@ export function StepReligion({ form, update }: Props) {
         value={form.mother_tongue}
         onChangeText={(v) => update({ mother_tongue: v })}
         placeholder="e.g. Marathi"
+      />
+      <FormField
+        label="Other languages known"
+        optional
+        value={form.languages_known}
+        onChangeText={(v) => update({ languages_known: v })}
+        placeholder="e.g. English (fluent), Hindi (conversational)"
       />
     </View>
   );

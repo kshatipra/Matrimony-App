@@ -1,8 +1,9 @@
 import * as ImagePicker from 'expo-image-picker';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
 
 import { useAuth } from '../../lib/AuthProvider';
+import { getPhotoUrl } from '../../lib/storage';
 import { supabase } from '../../lib/supabase';
 import { FormField } from '../FormField';
 import type { OnboardingForm } from './types';
@@ -19,6 +20,17 @@ export function StepPhotos({ form, update }: Props) {
   const [photos, setPhotos] = useState<UploadedPhoto[]>([]);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!session?.user) return;
+    supabase
+      .from('photos')
+      .select('id, storage_path')
+      .eq('profile_id', session.user.id)
+      .then(({ data }) => {
+        setPhotos((data ?? []).map((p) => ({ id: p.id, url: getPhotoUrl(p.storage_path) })));
+      });
+  }, [session?.user]);
 
   async function pickAndUpload() {
     setError('');
@@ -46,8 +58,6 @@ export function StepPhotos({ form, update }: Props) {
         .upload(path, arrayBuffer, { contentType: asset.mimeType ?? 'image/jpeg' });
       if (uploadError) throw uploadError;
 
-      const { data: publicUrl } = supabase.storage.from('profile-photos').getPublicUrl(path);
-
       const { data: photoRow, error: insertError } = await supabase
         .from('photos')
         .insert({
@@ -59,7 +69,7 @@ export function StepPhotos({ form, update }: Props) {
         .single();
       if (insertError) throw insertError;
 
-      setPhotos((prev) => [...prev, { id: photoRow.id, url: publicUrl.publicUrl }]);
+      setPhotos((prev) => [...prev, { id: photoRow.id, url: getPhotoUrl(path) }]);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Upload failed.');
     } finally {
@@ -70,11 +80,12 @@ export function StepPhotos({ form, update }: Props) {
   return (
     <View>
       <Text className="mb-1 text-xl font-bold text-gray-900">About & photos</Text>
-      <Text className="mb-6 text-gray-500">Profiles with a photo get far more responses. Photos are reviewed before they go live.</Text>
+      <Text className="mb-6 text-gray-500">
+        At least one photo and a short bio are required before your profile can be reviewed.
+      </Text>
 
       <FormField
         label="About me"
-        optional
         value={form.about_me}
         onChangeText={(v) => update({ about_me: v })}
         placeholder="A few lines about yourself"

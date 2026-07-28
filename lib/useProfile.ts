@@ -5,11 +5,12 @@ import type { Profile } from './profile';
 import { supabase } from './supabase';
 
 export function useProfile() {
-  const { session } = useAuth();
+  const { session, loading: authLoading } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
   const refetch = useCallback(async () => {
+    if (authLoading) return;
     if (!session?.user) {
       setProfile(null);
       setLoading(false);
@@ -19,11 +20,11 @@ export function useProfile() {
     const { data } = await supabase.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
     setProfile(data as Profile | null);
     setLoading(false);
-  }, [session?.user]);
+  }, [authLoading, session?.user]);
 
   useEffect(() => {
     refetch();
   }, [refetch]);
 
-  return { profile, loading, refetch };
+  return { profile, loading: authLoading || loading, refetch };
 }

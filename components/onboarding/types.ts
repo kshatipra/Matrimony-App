@@ -1,4 +1,4 @@
-import type { Diet, Gender, ManglikStatus, MaritalStatus, ProfileCreatedBy } from '../../lib/profile';
+import type { Diet, Gender, IdDocumentType, ManglikStatus, MaritalStatus, ProfileCreatedBy } from '../../lib/profile';
 
 // All fields as strings for controlled TextInputs; numeric/enum fields are parsed on submit.
 export type OnboardingForm = {
@@ -12,11 +12,15 @@ export type OnboardingForm = {
   state: string;
   country: string;
 
+  id_document_type: IdDocumentType | '';
+  id_document_path: string;
+
   religion: string;
   caste: string;
   sub_caste: string;
   gothra: string;
   mother_tongue: string;
+  languages_known: string;
 
   education: string;
   occupation: string;
@@ -31,6 +35,7 @@ export type OnboardingForm = {
   birth_place: string;
   nakshatra: string;
   rashi: string;
+  horoscope_chart_path: string;
 
   about_me: string;
 };
@@ -44,12 +49,15 @@ export const EMPTY_ONBOARDING_FORM: OnboardingForm = {
   diet: '',
   city: '',
   state: '',
-  country: '',
+  country: 'India',
+  id_document_type: '',
+  id_document_path: '',
   religion: '',
   caste: '',
   sub_caste: '',
   gothra: '',
   mother_tongue: '',
+  languages_known: '',
   education: '',
   occupation: '',
   annual_income_inr: '',
@@ -62,5 +70,6 @@ export const EMPTY_ONBOARDING_FORM: OnboardingForm = {
   birth_place: '',
   nakshatra: '',
   rashi: '',
+  horoscope_chart_path: '',
   about_me: '',
 };

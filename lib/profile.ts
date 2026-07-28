@@ -5,6 +5,7 @@ export type ManglikStatus = 'yes' | 'no' | 'anshik' | 'unknown';
 export type ProfileCreatedBy = 'self' | 'parent' | 'sibling' | 'relative';
 export type VerificationStatus = 'pending' | 'approved' | 'rejected';
 export type Role = 'user' | 'moderator' | 'admin';
+export type IdDocumentType = 'aadhaar' | 'pan' | 'passport' | 'driving_license';
 
 export type Profile = {
   id: string;
@@ -35,6 +36,10 @@ export type Profile = {
   mother_occupation: string | null;
   siblings: string | null;
   profile_created_by: ProfileCreatedBy | null;
+  languages_known: string | null;
+  horoscope_chart_path: string | null;
+  id_document_type: IdDocumentType | null;
+  id_document_path: string | null;
   verification_status: VerificationStatus;
   role: Role;
   created_at: string;
@@ -47,9 +52,15 @@ export const ONBOARDING_REQUIRED_FIELDS: (keyof Profile)[] = [
   'gender',
   'dob',
   'religion',
+  'caste',
   'marital_status',
   'city',
   'state',
+  'education',
+  'occupation',
+  'about_me',
+  'id_document_type',
+  'id_document_path',
 ];
 
 export function isOnboardingComplete(profile: Pick<Profile, (typeof ONBOARDING_REQUIRED_FIELDS)[number]> | null): boolean {

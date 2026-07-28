@@ -1,0 +1,58 @@
+export const COUNTRIES = ['India', 'United States', 'United Kingdom', 'Canada', 'Australia', 'United Arab Emirates', 'Other'];
+
+export const INDIA_STATES = [
+  'Andhra Pradesh',
+  'Arunachal Pradesh',
+  'Assam',
+  'Bihar',
+  'Chhattisgarh',
+  'Goa',
+  'Gujarat',
+  'Haryana',
+  'Himachal Pradesh',
+  'Jharkhand',
+  'Karnataka',
+  'Kerala',
+  'Madhya Pradesh',
+  'Maharashtra',
+  'Manipur',
+  'Meghalaya',
+  'Mizoram',
+  'Nagaland',
+  'Odisha',
+  'Punjab',
+  'Rajasthan',
+  'Sikkim',
+  'Tamil Nadu',
+  'Telangana',
+  'Tripura',
+  'Uttar Pradesh',
+  'Uttarakhand',
+  'West Bengal',
+  'Delhi',
+  'Jammu and Kashmir',
+  'Ladakh',
+  'Puducherry',
+  'Chandigarh',
+];
+
+// Curated major cities per state — not exhaustive. Falls back to free text for anything else.
+export const INDIA_CITIES_BY_STATE: Record<string, string[]> = {
+  Karnataka: ['Bengaluru', 'Mysuru', 'Hubballi', 'Mangaluru', 'Belagavi', 'Gadag', 'Davangere', 'Ballari'],
+  Maharashtra: ['Mumbai', 'Pune', 'Nagpur', 'Nashik', 'Aurangabad', 'Thane', 'Solapur', 'Kolhapur'],
+  'Tamil Nadu': ['Chennai', 'Coimbatore', 'Madurai', 'Tiruchirappalli', 'Salem', 'Tirunelveli'],
+  Telangana: ['Hyderabad', 'Warangal', 'Nizamabad', 'Karimnagar'],
+  'Andhra Pradesh': ['Visakhapatnam', 'Vijayawada', 'Guntur', 'Tirupati', 'Nellore'],
+  Kerala: ['Kochi', 'Thiruvananthapuram', 'Kozhikode', 'Thrissur', 'Kollam'],
+  Gujarat: ['Ahmedabad', 'Surat', 'Vadodara', 'Rajkot', 'Gandhinagar'],
+  Rajasthan: ['Jaipur', 'Jodhpur', 'Udaipur', 'Kota', 'Ajmer'],
+  'Uttar Pradesh': ['Lucknow', 'Kanpur', 'Noida', 'Ghaziabad', 'Agra', 'Varanasi'],
+  'West Bengal': ['Kolkata', 'Howrah', 'Durgapur', 'Siliguri'],
+  Punjab: ['Chandigarh', 'Ludhiana', 'Amritsar', 'Jalandhar'],
+  Delhi: ['New Delhi', 'Delhi'],
+  Haryana: ['Gurugram', 'Faridabad', 'Panipat'],
+  'Madhya Pradesh': ['Bhopal', 'Indore', 'Gwalior', 'Jabalpur'],
+  Bihar: ['Patna', 'Gaya', 'Bhagalpur'],
+};
+
+export const CITY_OTHER_OPTION = 'Other (type below)';

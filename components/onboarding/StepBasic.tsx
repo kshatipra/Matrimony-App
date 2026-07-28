@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { Text, View } from 'react-native';
 
 import { ChoiceGroup } from '../ChoiceGroup';
 import { FormField } from '../FormField';
+import { SelectField } from '../SelectField';
+import { CITY_OTHER_OPTION, COUNTRIES, INDIA_CITIES_BY_STATE, INDIA_STATES } from '../../lib/indiaLocations';
 import type { OnboardingForm } from './types';
 
 type Props = {
@@ -10,6 +13,11 @@ type Props = {
 };
 
 export function StepBasic({ form, update }: Props) {
+  const isIndia = form.country === 'India';
+  const curatedCities = INDIA_CITIES_BY_STATE[form.state] ?? [];
+  const hasCuratedCities = isIndia && curatedCities.length > 0;
+  const [manualCity, setManualCity] = useState(hasCuratedCities && form.city !== '' && !curatedCities.includes(form.city));
+
   return (
     <View>
       <Text className="mb-1 text-xl font-bold text-gray-900">Basic details</Text>
@@ -68,15 +76,47 @@ export function StepBasic({ form, update }: Props) {
         ]}
       />
 
-      <FormField label="City" value={form.city} onChangeText={(v) => update({ city: v })} placeholder="City" />
-      <FormField label="State" value={form.state} onChangeText={(v) => update({ state: v })} placeholder="State" />
-      <FormField
+      <SelectField
         label="Country"
-        optional
         value={form.country}
-        onChangeText={(v) => update({ country: v })}
-        placeholder="Country"
+        onChange={(v) => {
+          setManualCity(false);
+          update({ country: v, state: '', city: '' });
+        }}
+        options={COUNTRIES}
       />
+
+      {isIndia ? (
+        <SelectField
+          label="State"
+          value={form.state}
+          onChange={(v) => {
+            setManualCity(false);
+            update({ state: v, city: '' });
+          }}
+          options={INDIA_STATES}
+        />
+      ) : (
+        <FormField label="State" value={form.state} onChangeText={(v) => update({ state: v })} placeholder="State" />
+      )}
+
+      {hasCuratedCities && !manualCity ? (
+        <SelectField
+          label="City"
+          value={form.city}
+          onChange={(v) => {
+            if (v === CITY_OTHER_OPTION) {
+              setManualCity(true);
+              update({ city: '' });
+            } else {
+              update({ city: v });
+            }
+          }}
+          options={[...curatedCities, CITY_OTHER_OPTION]}
+        />
+      ) : (
+        <FormField label="City" value={form.city} onChangeText={(v) => update({ city: v })} placeholder="City" />
+      )}
     </View>
   );
 }

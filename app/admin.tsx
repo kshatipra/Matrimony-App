@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { FlatList, Image, Pressable, Text, View } from 'react-native';
 
-import { useProfile } from '../lib/useProfile';
-import { supabase } from '../lib/supabase';
 import type { Profile } from '../lib/profile';
+import { getPhotoUrl } from '../lib/storage';
+import { supabase } from '../lib/supabase';
+import { useProfile } from '../lib/useProfile';
 
 type PendingProfile = Pick<
   Profile,
-  'id' | 'full_name' | 'gender' | 'dob' | 'city' | 'state' | 'religion' | 'verification_status'
+  'id' | 'full_name' | 'gender' | 'dob' | 'city' | 'state' | 'religion' | 'verification_status' | 'id_document_type' | 'id_document_path'
 >;
 
 type Photo = { id: string; storage_path: string; is_approved: boolean };
@@ -16,6 +17,7 @@ export default function Admin() {
   const { profile, loading: profileLoading } = useProfile();
   const [pending, setPending] = useState<PendingProfile[]>([]);
   const [photosByProfile, setPhotosByProfile] = useState<Record<string, Photo[]>>({});
+  const [idDocUrls, setIdDocUrls] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
 
   const isStaff = profile?.role === 'admin' || profile?.role === 'moderator';
@@ -25,7 +27,7 @@ export default function Admin() {
     setLoading(true);
     const { data: profiles } = await supabase
       .from('profiles')
-      .select('id, full_name, gender, dob, city, state, religion, verification_status')
+      .select('id, full_name, gender, dob, city, state, religion, verification_status, id_document_type, id_document_path')
       .eq('verification_status', 'pending')
       .order('created_at', { ascending: true });
     setPending((profiles as PendingProfile[]) ?? []);
@@ -42,8 +44,21 @@ export default function Admin() {
         grouped[photo.profile_id].push(photo);
       }
       setPhotosByProfile(grouped);
+
+      const signedEntries = await Promise.all(
+        (profiles ?? [])
+          .filter((p) => p.id_document_path)
+          .map(async (p) => {
+            const { data } = await supabase.storage
+              .from('identity-documents')
+              .createSignedUrl(p.id_document_path as string, 60 * 5);
+            return [p.id, data?.signedUrl ?? null] as const;
+          })
+      );
+      setIdDocUrls(Object.fromEntries(signedEntries.filter(([, url]) => url)) as Record<string, string>);
     } else {
       setPhotosByProfile({});
+      setIdDocUrls({});
     }
     setLoading(false);
   }, [isStaff]);
@@ -96,13 +111,22 @@ export default function Admin() {
               {item.gender} · {item.dob} · {item.city}, {item.state} · {item.religion}
             </Text>
 
+            <View className="mt-2">
+              <Text className="text-sm font-medium text-gray-700">
+                ID document: {item.id_document_type ?? 'none'}
+              </Text>
+              {idDocUrls[item.id] ? (
+                <Image source={{ uri: idDocUrls[item.id] }} className="mt-1 h-40 w-full rounded-lg" resizeMode="contain" />
+              ) : (
+                <Text className="text-sm text-red-600">No document uploaded</Text>
+              )}
+            </View>
+
             {photosByProfile[item.id]?.length ? (
-              <View className="mt-2">
+              <View className="mt-3">
                 {photosByProfile[item.id].map((photo) => (
                   <View key={photo.id} className="mb-2 flex-row items-center justify-between">
-                    <Text className="flex-1 text-sm text-gray-500" numberOfLines={1}>
-                      {photo.storage_path}
-                    </Text>
+                    <Image source={{ uri: getPhotoUrl(photo.storage_path) }} className="h-12 w-12 rounded-lg" />
                     <Pressable
                       onPress={() => setPhotoApproval(photo.id, !photo.is_approved)}
                       className={`ml-2 rounded-full px-3 py-1 ${photo.is_approved ? 'bg-green-100' : 'bg-gray-100'}`}>
@@ -113,7 +137,9 @@ export default function Admin() {
                   </View>
                 ))}
               </View>
-            ) : null}
+            ) : (
+              <Text className="mt-2 text-sm text-red-600">No photos uploaded</Text>
+            )}
 
             <View className="mt-3 flex-row gap-3">
               <Pressable

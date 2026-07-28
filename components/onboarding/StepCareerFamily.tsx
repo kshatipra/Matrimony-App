@@ -15,8 +15,8 @@ export function StepCareerFamily({ form, update }: Props) {
       <Text className="mb-1 text-xl font-bold text-gray-900">Education, career & family</Text>
       <Text className="mb-6 text-gray-500">Helps others understand your background.</Text>
 
-      <FormField label="Education" optional value={form.education} onChangeText={(v) => update({ education: v })} placeholder="e.g. B.Tech Computer Science" />
-      <FormField label="Occupation" optional value={form.occupation} onChangeText={(v) => update({ occupation: v })} placeholder="e.g. Software Engineer" />
+      <FormField label="Education" value={form.education} onChangeText={(v) => update({ education: v })} placeholder="e.g. B.Tech Computer Science" />
+      <FormField label="Occupation" value={form.occupation} onChangeText={(v) => update({ occupation: v })} placeholder="e.g. Software Engineer" />
       <FormField
         label="Annual income (INR)"
         optional
