@@ -17,11 +17,17 @@ export default function Home() {
       <Text className="text-2xl font-bold text-rose-600">Welcome, {profile?.full_name}</Text>
       <Text className="mt-3 text-center text-gray-500">
         {profile?.verification_status === 'approved'
-          ? 'Your profile is live. Browse & matching are coming in the next phase.'
+          ? 'Your profile is live.'
           : 'Your profile is under review. We’ll notify you once it’s approved.'}
       </Text>
 
-      <Pressable onPress={() => router.push('/onboarding')} className="mt-6 rounded-lg border border-rose-600 px-6 py-3">
+      {profile?.verification_status === 'approved' && (
+        <Pressable onPress={() => router.push('/browse')} className="mt-6 items-center rounded-lg bg-rose-600 px-6 py-3">
+          <Text className="font-semibold text-white">Browse profiles</Text>
+        </Pressable>
+      )}
+
+      <Pressable onPress={() => router.push('/onboarding')} className="mt-3 rounded-lg border border-rose-600 px-6 py-3">
         <Text className="font-semibold text-rose-600">Edit profile</Text>
       </Pressable>
 
