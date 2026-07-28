@@ -25,6 +25,12 @@ export default function Home() {
         <Text className="font-semibold text-rose-600">Edit profile</Text>
       </Pressable>
 
+      {(profile?.role === 'admin' || profile?.role === 'moderator') && (
+        <Pressable onPress={() => router.push('/admin')} className="mt-3 rounded-lg px-6 py-3">
+          <Text className="font-semibold text-gray-700">Admin review queue</Text>
+        </Pressable>
+      )}
+
       <Pressable onPress={handleSignOut} className="mt-3 rounded-lg px-6 py-3">
         <Text className="text-gray-400">Sign out</Text>
       </Pressable>
