@@ -7,6 +7,7 @@ import type { Profile } from '../lib/profile';
 import { getPhotoUrl } from '../lib/storage';
 import { supabase } from '../lib/supabase';
 import { useProfile } from '../lib/useProfile';
+import { useSubscription } from '../lib/useSubscription';
 
 type Result = Pick<
   Profile,
@@ -15,6 +16,7 @@ type Result = Pick<
 
 export default function Browse() {
   const { profile } = useProfile();
+  const { isActive, loading: subLoading } = useSubscription();
   const [filters, setFilters] = useState<BrowseFilters>(EMPTY_BROWSE_FILTERS);
   const [results, setResults] = useState<Result[]>([]);
   const [loading, setLoading] = useState(false);
@@ -67,6 +69,28 @@ export default function Browse() {
     setResults((data ?? []).map((p) => ({ ...p, photoUrl: photoMap[p.id] ?? null })));
     setLoading(false);
   }, [profile, filters]);
+
+  if (subLoading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-white">
+        <Text className="text-gray-400">Loading…</Text>
+      </View>
+    );
+  }
+
+  if (!isActive) {
+    return (
+      <View className="flex-1 items-center justify-center bg-white px-6">
+        <Text className="text-xl font-bold text-gray-900">Subscribe to browse</Text>
+        <Text className="mt-2 text-center text-gray-500">
+          A ₹999/month membership unlocks browsing profiles and sending interests.
+        </Text>
+        <Pressable onPress={() => router.push('/upgrade')} className="mt-6 items-center rounded-lg bg-rose-600 px-6 py-3">
+          <Text className="font-semibold text-white">Subscribe</Text>
+        </Pressable>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-white pt-16">

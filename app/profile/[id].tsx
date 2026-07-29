@@ -8,6 +8,7 @@ import type { Interest } from '../../lib/interests';
 import type { Profile } from '../../lib/profile';
 import { getPhotoUrl } from '../../lib/storage';
 import { supabase } from '../../lib/supabase';
+import { useSubscription } from '../../lib/useSubscription';
 
 type Row = { label: string; value: string | null | undefined };
 
@@ -15,6 +16,7 @@ export default function ProfileDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { session } = useAuth();
   const myId = session?.user.id;
+  const { isActive, loading: subLoading } = useSubscription();
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
@@ -93,10 +95,21 @@ export default function ProfileDetail() {
     loadInterest();
   }
 
-  if (loading) {
+  if (loading || subLoading) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
         <Text className="text-gray-400">Loading…</Text>
+      </View>
+    );
+  }
+
+  if (!isActive) {
+    return (
+      <View className="flex-1 items-center justify-center bg-white px-6">
+        <Text className="text-xl font-bold text-gray-900">Subscribe to view this profile</Text>
+        <Pressable onPress={() => router.push('/upgrade')} className="mt-6 items-center rounded-lg bg-rose-600 px-6 py-3">
+          <Text className="font-semibold text-white">Subscribe</Text>
+        </Pressable>
       </View>
     );
   }

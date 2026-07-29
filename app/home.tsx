@@ -2,10 +2,12 @@ import { router } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 
 import { useProfile } from '../lib/useProfile';
+import { useSubscription } from '../lib/useSubscription';
 import { supabase } from '../lib/supabase';
 
 export default function Home() {
   const { profile } = useProfile();
+  const { isActive } = useSubscription();
 
   async function handleSignOut() {
     await supabase.auth.signOut();
@@ -23,8 +25,15 @@ export default function Home() {
 
       {profile?.verification_status === 'approved' && (
         <>
-          <Pressable onPress={() => router.push('/browse')} className="mt-6 items-center rounded-lg bg-rose-600 px-6 py-3">
-            <Text className="font-semibold text-white">Browse profiles</Text>
+          <Pressable
+            onPress={() => router.push('/upgrade')}
+            className={`mt-6 items-center rounded-lg px-6 py-3 ${isActive ? 'border border-rose-600' : 'bg-rose-600'}`}>
+            <Text className={isActive ? 'font-semibold text-rose-600' : 'font-semibold text-white'}>
+              {isActive ? 'Membership active' : 'Subscribe to unlock browsing'}
+            </Text>
+          </Pressable>
+          <Pressable onPress={() => router.push('/browse')} className="mt-3 items-center rounded-lg border border-rose-600 px-6 py-3">
+            <Text className="font-semibold text-rose-600">Browse profiles</Text>
           </Pressable>
           <View className="mt-3 flex-row gap-3">
             <Pressable onPress={() => router.push('/interests')} className="items-center rounded-lg border border-rose-600 px-6 py-3">
@@ -39,6 +48,10 @@ export default function Home() {
 
       <Pressable onPress={() => router.push('/onboarding')} className="mt-3 rounded-lg border border-rose-600 px-6 py-3">
         <Text className="font-semibold text-rose-600">Edit profile</Text>
+      </Pressable>
+
+      <Pressable onPress={() => router.push('/biodata')} className="mt-3 rounded-lg px-6 py-3">
+        <Text className="font-semibold text-gray-600">Download biodata (PDF)</Text>
       </Pressable>
 
       {(profile?.role === 'admin' || profile?.role === 'moderator') && (
